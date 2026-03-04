@@ -1,0 +1,57 @@
+# CyberSecLLM: Hybrid Mamba-Transformer Foundation Model
+# for Zero-Shot Cybersecurity Threat Intelligence
+# with Continuous-Time Adaptive Detection
+
+# Core deep learning
+torch>=2.1.0
+torchvision>=0.16.0
+torchaudio>=2.1.0
+
+# Mamba / State Space Models
+mamba-ssm>=1.2.0
+causal-conv1d>=1.2.0
+
+# ODE solvers
+torchdiffeq>=0.2.3
+
+# Transformers and NLP
+transformers>=4.36.0
+tokenizers>=0.15.0
+sentencepiece>=0.1.99
+
+# Distributed training
+deepspeed>=0.12.0
+accelerate>=0.25.0
+
+# Data processing
+numpy>=1.24.0
+pandas>=2.0.0
+scipy>=1.11.0
+scikit-learn>=1.3.0
+imbalanced-learn>=0.11.0
+
+# Visualization
+matplotlib>=3.7.0
+seaborn>=0.13.0
+plotly>=5.18.0
+
+# Configuration and logging
+pyyaml>=6.0
+omegaconf>=2.3.0
+wandb>=0.16.0
+tensorboard>=2.15.0
+
+# Differential privacy
+opacus>=1.4.0
+
+# Evaluation metrics
+torchmetrics>=1.2.0
+
+# Dataset access
+kaggle>=1.6.0
+requests>=2.31.0
+
+# Utilities
+tqdm>=4.66.0
+rich>=13.7.0
+einops>=0.7.0

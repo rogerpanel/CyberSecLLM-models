@@ -1,0 +1,117 @@
+# CyberSecLLM Training Configuration
+
+# ==================== Training ====================
+training:
+  epochs: 100
+  batch_size: 256
+  gradient_accumulation_steps: 32
+  max_steps: 750000
+  seed: 42
+
+  # Optimizer
+  optimizer:
+    name: "adamw"
+    lr: 1.0e-3
+    betas: [0.9, 0.95]
+    weight_decay: 0.1
+    eps: 1.0e-8
+
+  # Learning rate schedule
+  scheduler:
+    name: "cosine"
+    warmup_fraction: 0.01
+    min_lr_ratio: 0.1
+
+  # Gradient clipping
+  gradient_clip: 1.0
+
+  # Early stopping
+  early_stopping:
+    patience: 10
+    metric: "val_loss"
+    mode: "min"
+
+# ==================== Multi-Task Loss ====================
+loss:
+  use_uncertainty_weighting: true
+  initial_log_sigma:
+    masked_flow: 0.0
+    contrastive: 0.0
+    temporal_forecast: 0.0
+    attack_attribution: 0.0
+  moe_balance_weight: 0.01
+  stability_reg_weight: 0.001
+
+# ==================== Differential Privacy ====================
+privacy:
+  enabled: true
+  max_grad_norm: 1.0
+  noise_multiplier: 0.8
+  target_epsilon: 8.0
+  target_delta: 1.0e-5
+  accountant: "rdp"
+
+# ==================== Data ====================
+data:
+  # IIS3D collection
+  iis3d:
+    cic_ids2018:
+      path: "data/IIS3D/CIC-IDS2018/"
+      records: 16233002
+      features: 80
+    cic_iot2023:
+      path: "data/IIS3D/CIC-IoT-2023/"
+      records: 46686579
+      features: 46
+    unsw_nb15:
+      path: "data/IIS3D/UNSW-NB15/"
+      records: 2540044
+      features: 49
+
+  # ICS3D collection
+  ics3d:
+    azure_cloud:
+      path: "data/ICS3D/Azure-Cloud/"
+      features: 40
+    edge_iiot:
+      path: "data/ICS3D/Edge-IIoTset/"
+      records: 20761991
+      features: 61
+    kubernetes_docker:
+      path: "data/ICS3D/Kubernetes-Docker/"
+      features: 35
+
+  # Preprocessing
+  preprocessing:
+    harmonized_features: 80
+    normalization: "z_score"
+    missing_value_strategy: "forward_fill"
+    train_val_test_split: [0.7, 0.15, 0.15]
+    temporal_ordering: true
+
+# ==================== Bayesian Inference ====================
+bayesian:
+  enabled: true
+  num_mc_train: 10
+  num_mc_eval: 50
+  prior: "gaussian"
+  prior_std: 1.0
+  low_rank_dim: 8
+  temperature_scaling: true
+
+# ==================== Distributed Training ====================
+distributed:
+  backend: "nccl"
+  zero_stage: 3
+  fp16: true
+  gradient_checkpointing: true
+  num_gpus: 64
+  gpu_type: "A100_80GB"
+
+# ==================== Logging ====================
+logging:
+  log_interval: 100
+  eval_interval: 1000
+  save_interval: 5000
+  wandb_project: "cybersecllm"
+  tensorboard_dir: "runs/"

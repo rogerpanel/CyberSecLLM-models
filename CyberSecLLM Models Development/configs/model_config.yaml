@@ -1,0 +1,108 @@
+# CyberSecLLM Model Configuration
+# Hybrid Mamba-Transformer with TA-BN-ODE and Temporal Point Processes
+
+# ==================== Model Variants ====================
+model:
+  name: "CyberSecLLM"
+  variant: "7B"  # Options: 3B, 7B, 13B
+
+# ==================== Architecture ====================
+architecture:
+  # Shared parameters
+  hidden_dim: 3072
+  num_layers: 30
+  dropout: 0.1
+  activation: "silu"
+
+  # Mamba SSM blocks
+  mamba:
+    num_layers: 24
+    state_dim: 16
+    conv_kernel: 4
+    expand_factor: 2
+    dt_rank: "auto"
+    use_selective: true
+
+  # Cross-attention transformer blocks
+  transformer:
+    num_layers: 6
+    num_heads: 24
+    head_dim: 128
+    use_flash_attention: true
+    sparse_attention: true
+    knowledge_base_dim: 3072
+
+  # Mixture-of-Experts
+  moe:
+    num_experts: 8
+    active_experts: 2
+    shared_experts: 1
+    expert_hidden_dim: 8192
+    load_balance_weight: 0.01
+    routing: "top_k"
+
+  # TA-BN-ODE module
+  tabn_ode:
+    num_blocks: 2
+    hidden_dim: 256
+    time_constants: [1.0e-6, 1.0e-3, 1.0, 3600.0]
+    solver: "dopri5"
+    rtol: 1.0e-3
+    atol: 1.0e-4
+    adjoint: true
+    tabn_mlp_hidden: 64
+
+  # Temporal Point Process
+  point_process:
+    num_heads: 8
+    transformer_layers: 4
+    model_dim: 512
+    num_marks: 50
+    log_barrier_mu: 0.01
+    quadrature_points: 128
+
+# ==================== Tokenization ====================
+tokenization:
+  continuous_features: 80
+  categorical_vocab_sizes:
+    protocol: 256
+    port: 65536
+    flag: 64
+  temporal_encoding_dim: 768
+  topological_neighbors: 16
+  final_embedding_dim: 3072
+
+# ==================== Model Size Variants ====================
+variants:
+  "3B":
+    hidden_dim: 2048
+    mamba_layers: 16
+    transformer_layers: 4
+    num_heads: 16
+    moe_experts: 8
+    active_experts: 2
+    total_params: "3.2B"
+    active_params: "2.4B"
+    context_length: 524288
+
+  "7B":
+    hidden_dim: 3072
+    mamba_layers: 24
+    transformer_layers: 6
+    num_heads: 24
+    moe_experts: 8
+    active_experts: 2
+    total_params: "7.4B"
+    active_params: "5.1B"
+    context_length: 1048576
+
+  "13B":
+    hidden_dim: 4096
+    mamba_layers: 32
+    transformer_layers: 8
+    num_heads: 32
+    moe_experts: 16
+    active_experts: 4
+    total_params: "13.1B"
+    active_params: "8.8B"
+    context_length: 1048576
